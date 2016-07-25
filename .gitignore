@@ -50,3 +50,4 @@ Temporary Items
 .settings/
 .classpath
 target/
+pom.xml
