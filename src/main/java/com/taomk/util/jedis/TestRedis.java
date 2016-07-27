@@ -32,14 +32,19 @@ public class TestRedis {
 	}
 
 	/**
-	 * redis操作字符串
+	 * redis操作字符串 字符串类型是Redis中最为基础的数据存储类型，它在Redis中是二进制安全的。
+	 * 这便意味着该类型可以接受任何格式的数据，如JPEG图像数据或Json对象描述信息等。
+	 * 在Redis中字符串类型的Value最多可以容纳的数据长度是512M。
 	 */
 	@Test
 	public void testString() {
 
 		// 添加数据
+		// #设定该Key持有指定的字符串Value，如果该Key已经存在，则覆盖其原有值。
 		jedis.set("name", "taomk");
+
 		// 获取数据
+		// #获取指定Key的Value，如果该Key不存在，返回null。
 		System.out.println(jedis.get("name"));
 
 		// 拼接数据
@@ -54,6 +59,23 @@ public class TestRedis {
 		// 进行加1操作
 		jedis.incr("age");
 		System.out.println(jedis.get("name") + "-" + jedis.get("age") + "-" + jedis.get("address"));
+
+		// 设置某个key的过期时间（单位：秒）,在超过该时间后，Key被自动的删除。如果该Key在超时之前被修改，与该键关联的超时将被移除。
+		jedis.expire("name", 3);
+
+		try {
+			Thread.sleep(4 * 1000L);
+			System.out.println(jedis.get("name"));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		// # EXPIREAT的作用和EXPIRE类似，都用于为 key 设置生存时间。
+		// 不同在于 EXPIREAT命令接受的时间参数是 UNIX时间戳(unix timestamp)。
+		// boolean expireAt(final String key, final long unixTime)
+		
+//		#通过ttl命令查看一下指定Key的剩余存活时间(秒数)，0表示已经过期，-1表示永不过期。
+//		long ttl(final String key)
 	}
 
 	/**
@@ -83,6 +105,7 @@ public class TestRedis {
 		System.out.println(jedis.hlen("userinfo"));
 
 		// 查看redis中是否存在key为userinfo的记录
+		// #判断该键是否存在，存在返回1，否则返回0
 		System.out.println(jedis.exists("userinfo"));
 
 		// 返回map对象中所有的key
@@ -119,6 +142,24 @@ public class TestRedis {
 
 		// 获取数据
 		System.out.println(jedis.lrange(globalKey, 0, -1));
+
+		String newKeyName = "JavaEE Framework";
+		// 重命名指定的Key,如果参数中的两个Keys的命名相同，或者是源Key不存在，该命令都会返回相关的错误信息。如果newKey已经存在，则直接覆盖。
+		System.out.println(jedis.rename(globalKey, newKeyName));
+		System.out.println(jedis.lrange(globalKey, 0, -1));
+		System.out.println(jedis.lrange(newKeyName, 0, -1));
+
+		// 用来改变一个键的名称，如果新的键不存在。
+		// 0, 如果新的键已经存在，此时并不会改变原来键的名称。
+		jedis.lpush("anotherKeyName", "SpringMVC");
+		System.out.println(jedis.renamenx(newKeyName, "anotherKeyName"));
+		System.out.println(jedis.lrange(newKeyName, 0, -1));
+		System.out.println(jedis.lrange("anotherKeyName", 0, -1));
+
+		// 1, 如果键被重命名为新的键，即原来的键被重命名为新的键。
+		System.out.println(jedis.renamenx(newKeyName, "anotherNewKeyName"));
+		System.out.println(jedis.lrange(newKeyName, 0, -1));
+		System.out.println(jedis.lrange("anotherNewKeyName", 0, -1));
 
 	}
 
