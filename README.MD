@@ -351,11 +351,16 @@ Sorted-Sets和Sets类型极为相似，它们都是字符串的集合，都不�
 
 	List<byte[]> zrangeByScoreWithScores(final Stringkey, final double min, final double max, final int offset, final int count)
 
-	void zremrangeByRank(final String key, final long start,final long end)
-
 	void zremrangeByScore(final String key, final double start,final double end)
 
 	void zremrangeByScore(final String key, final String start,final String end)
+	
+** 通过key删除给定区间内的元素 **
+	
+	void zremrangeByRank(final String key, final long start,final long end)
+
+
+** 计算numkeys排序按指定键给出集合的交集，并将结果存储在目的地。它是强制性的传递的输入键和其他(任选)参数之前，以提供输入键(numkeys)的数量 **
 
 	void zunionstore(final String dstkey, final String... sets)
 
